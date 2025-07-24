@@ -1,4 +1,4 @@
-import prisma from "@/app/lib/PrismaClient";
+import prisma from "@/prisma/PrismaClient";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 
@@ -26,15 +26,17 @@ export async function POST(req) {
       return NextResponse.json({ error: "Passoword Salah" }, { status: 401 });
     }
 
-    return NextResponse.json({
-      message: "Login Berhasil",
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      }
-    }, {status: 200})
-
+    return NextResponse.json(
+      {
+        message: "Login Berhasil",
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(err);
     NextResponse.json({ error: "Terjadi kesalahan" }, { status: 500 });

@@ -41,6 +41,7 @@ model Report {
   userId       Int?      // Optional: for anonymous reports
   user         User?     @relation(fields: [userId], references: [id])
   sourceIP     String?   // Optional for abuse detection
+  name         String?
 }
 
 model Donation {
