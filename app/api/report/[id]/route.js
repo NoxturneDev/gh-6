@@ -197,8 +197,8 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, context) {
   try {
-    const { params } = context; // 👈 Ambil `params` dari context
-    const { id } = await params; // ✅ Baru ambil `id`
+    const { params } = context; 
+    const { id } = await params; 
 
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json({ success: false, error: "Invalid ID" }, { status: 400 });

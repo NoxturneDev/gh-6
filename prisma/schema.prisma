@@ -71,6 +71,7 @@ model DonationCampaign {
   deadline      DateTime
   status        Int       @default(0) // 0: active, 1: closed, 2: archived
   createdAt     DateTime  @default(now())
+  imgUrl      String    @default("")  
 }
 
 model RegionClassification {
