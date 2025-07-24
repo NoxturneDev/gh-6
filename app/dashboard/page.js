@@ -30,9 +30,9 @@ const useDashboardStore = create((set, get) => ({
     set({ loading: true })
     try {
       const [regionsRes, reportsRes, donationsRes] = await Promise.all([
-        fetch("http://localhost:3000/api/regions"),
-        fetch("http://localhost:3000/api/reports"),
-        fetch("http://localhost:3000/api/donations"),
+        fetch("http://localhost:3000/api/region"),
+        fetch("http://localhost:3000/api/report"),
+        fetch("http://localhost:3000/api/donation"),
       ])
 
       const regions = await regionsRes.json()
