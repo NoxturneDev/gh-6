@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  // output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -9,10 +9,49 @@ datasource db {
 }
 
 model User {
-  id        Int   @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String
   password  String
-  role      Int   @default(0) // 0: user, 1: admin
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Int       @default(0) // 0: user, 1: admin
+  reports   Report[]  // If you later want to attribute reports to registered users
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?  @updatedAt
 }
+
+model Region {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  reports     Report[]
+  donations   Donation[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Report {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String
+  regionId     Int
+  region       Region    @relation(fields: [regionId], references: [id])
+  status       Int       @default(0) // 0: pending, 1: approved, 2: rejected
+  submittedAt  DateTime  @default(now())
+  validatedAt  DateTime?
+  userId       Int?      // Optional: for anonymous reports
+  user         User?     @relation(fields: [userId], references: [id])
+  sourceIP     String?   // Optional for abuse detection
+  name         String?
+}
+
+model Donation {
+  id           Int       @id @default(autoincrement())
+  donorName    String?
+  amount       Float
+  message      String?
+  regionId     Int
+  region       Region    @relation(fields: [regionId], references: [id])
+  createdAt    DateTime  @default(now())
+  paymentStatus Int      @default(0) // 0: pending, 1: success, 2: failed
+}
+
