@@ -1,103 +1,155 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useRef, useEffect } from 'react';
+
+const MAP_SOURCES = {
+  default: "/default_map.jpg",
+  sumatra: "/sumatra_active.jpg",
+  java: "/default_map.jpg",
+  kalimantan: "/default_map.jpg",
+  sulawesi: "/default_map.jpg",
+  papua: "/default_map.jpg",
+};
+
+const regions = {
+  sumatra: {
+    name: "Sumatra",
+    info: "Sumatra is the sixth-largest island in the world.",
+    rect: { x: 0, y: 5, width: 30, height: 75 }
+  },
+  java: {
+    name: "Java",
+    info: "Java is the world's most populous island.",
+    rect: { x: 25, y: 75, width: 25, height: 15 }
+  },
+  kalimantan: {
+    name: "Kalimantan (Borneo)",
+    info: "The island is divided among three countries.",
+    rect: { x: 28, y: 10, width: 28, height: 60 }
+  },
+  sulawesi: {
+    name: "Sulawesi",
+    info: "Sulawesi is known for its distinctive K-shape.",
+    rect: { x: 50, y: 30, width: 20, height: 50 }
+  },
+  papua: {
+    name: "Papua (New Guinea)",
+    info: "The western half of New Guinea is part of Indonesia.",
+    rect: { x: 70, y: 25, width: 30, height: 55 }
+  }
+};
+
+// Tooltip component to display information
+const Tooltip = ({ content, position }) => {
+  if (!content) return null;
+
+  const style = {
+    position: 'absolute',
+    left: `${position.x}px`,
+    top: `${position.y}px`,
+    transform: 'translate(15px, -100%)',
+    transition: 'opacity 0.2s ease-in-out',
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div style={style} className="bg-gray-800 text-white text-sm rounded-lg shadow-lg p-3 z-50 pointer-events-none max-w-xs">
+      <h3 className="font-bold text-base mb-1">{content.name}</h3>
+      <p>{content.info}</p>
+    </div>
+  );
+};
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+export default function InteractiveMap() {
+  const [currentMap, setCurrentMap] = useState(MAP_SOURCES.default);
+  const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+  // Use a ref to hold the timer ID. This prevents re-renders.
+  const debounceTimer = useRef(null);
+
+  // --- DEBOUNCE LOGIC ---
+  // This effect will run when the component unmounts to clear any pending timers.
+  useEffect(() => {
+    return () => {
+      clearTimeout(debounceTimer.current);
+    };
+  }, []);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Update tooltip position immediately for a smooth feel.
+    setTooltipPosition({ x, y });
+
+    // Clear the previous timer to reset the debounce period.
+    clearTimeout(debounceTimer.current);
+
+    // Set a new timer. The map will only change after the delay (e.g., 75ms).
+    debounceTimer.current = setTimeout(() => {
+      const percentX = (x / rect.width) * 100;
+      const percentY = (y / rect.height) * 100;
+
+      let activeRegion = null;
+
+      for (const key in regions) {
+        const region = regions[key];
+        if (
+          percentX >= region.rect.x &&
+          percentX <= region.rect.x + region.rect.width &&
+          percentY >= region.rect.y &&
+          percentY <= region.rect.y + region.rect.height
+        ) {
+          activeRegion = key;
+          break;
+        }
+      }
+
+      if (activeRegion) {
+        // Only update state if the new region is different from the current one.
+        if (hoveredRegion?.name !== regions[activeRegion].name) {
+          setCurrentMap(MAP_SOURCES[activeRegion]);
+          setHoveredRegion(regions[activeRegion]);
+        }
+      } else {
+        // If not over any region, revert to the default.
+        if (hoveredRegion !== null) {
+          setCurrentMap(MAP_SOURCES.default);
+          setHoveredRegion(null);
+        }
+      }
+    }, 10); // 75ms delay. You can adjust this value.
+  };
+
+  const handleMouseLeave = () => {
+    // When the mouse leaves, clear any pending timers and reset to default.
+    clearTimeout(debounceTimer.current);
+    setCurrentMap(MAP_SOURCES.default);
+    setHoveredRegion(null);
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 min-h-screen">
+      <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4">Interactive Map of Indonesia</h1>
+      <p className="text-gray-600 mb-6 text-center">Hover over an island to see more information.</p>
+
+      <div
+        className="relative w-full max-w-4xl mx-auto"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* The image source is now controlled by our state */}
+        <img
+          src={currentMap}
+          alt="Map of Indonesia"
+          className="w-full h-auto"
+        />
+
+        {/* The Tooltip still works the same way */}
+        <Tooltip content={hoveredRegion} position={tooltipPosition} />
+      </div>
     </div>
   );
 }

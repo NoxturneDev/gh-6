@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  role      Int       @default(0) // 0: user, 1: admin
+  reports   Report[]  // If you later want to attribute reports to registered users
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Region {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  reports     Report[]
+  donations   Donation[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Report {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String
+  regionId     Int
+  region       Region    @relation(fields: [regionId], references: [id])
+  status       Int       @default(0) // 0: pending, 1: approved, 2: rejected
+  submittedAt  DateTime  @default(now())
+  validatedAt  DateTime?
+  userId       Int?      // Optional: for anonymous reports
+  user         User?     @relation(fields: [userId], references: [id])
+  sourceIP     String?   // Optional for abuse detection
+}
+
+model Donation {
+  id           Int       @id @default(autoincrement())
+  donorName    String?
+  amount       Float
+  message      String?
+  regionId     Int
+  region       Region    @relation(fields: [regionId], references: [id])
+  createdAt    DateTime  @default(now())
+  paymentStatus Int      @default(0) // 0: pending, 1: success, 2: failed
+}
+
+model RegionDetail {
+  id              Int       @id @default(autoincrement())
+  regionId        Int       @unique
+  region          Region    @relation(fields: [regionId], references: [id])
+  educationStatus Int       @default(0) // 0: harus ditindak, 1: terbelakang, 2: baik
+  sekolahNegeri   Int
+  sekolahSwasta   Int
+  sdInSchool      Int
+  sdOutSchool     Int
+  smpInSchool     Int
+  smpOutSchool    Int
+  smaInSchool     Int
+  smaOutSchool    Int
+  teacherCount    Int
+}
+
+model RegionClassification {
+  id       Int    @id @default(autoincrement())
+  regionId Int
+  region   Region @relation(fields: [regionId], references: [id])
+  type     String // e.g., "akses_transportasi", "infrastruktur", etc.
+}
+
+
