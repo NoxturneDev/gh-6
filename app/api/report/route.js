@@ -1,4 +1,3 @@
-// app/api/reports/route.js - Updated with image support
 import { NextResponse } from 'next/server';
 import prisma from "@/prisma/PrismaClient"
 import { deleteUploadedFile } from '@/app/lib/multer';
@@ -68,14 +67,12 @@ export async function GET(request) {
   }
 }
 
-// POST - Create new report with image support
 export async function POST(request) {
   try {
     const contentType = request.headers.get('content-type');
     let title, description, regionId, userId, name, sourceIP, imgUrl;
 
     if (contentType?.includes('multipart/form-data')) {
-      // Handle form data with file upload
       const formData = await request.formData();
       
       title = formData.get('title');
@@ -84,12 +81,10 @@ export async function POST(request) {
       userId = formData.get('userId');
       name = formData.get('name');
       sourceIP = formData.get('sourceIP');
-      imgUrl = formData.get('imgUrl') || ''; // URL from uploaded file
+      imgUrl = formData.get('imgUrl') || ''; 
       
-      // Handle file upload if present
       const imageFile = formData.get('image');
       if (imageFile && imageFile instanceof File) {
-        // Process single file upload here
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(imageFile.type)) {
           return NextResponse.json(
@@ -105,7 +100,6 @@ export async function POST(request) {
           );
         }
 
-        // Save file logic (similar to upload API)
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = imageFile.name.split('.').pop();
         const filename = `report-${uniqueSuffix}.${ext}`;
@@ -127,12 +121,10 @@ export async function POST(request) {
         imgUrl = `/uploads/reports/${filename}`;
       }
     } else {
-      // Handle JSON request
       const body = await request.json();
       ({ title, description, regionId, userId, name, sourceIP, imgUrl } = body);
     }
 
-    // Validation
     if (!title || !description || !regionId) {
       return NextResponse.json(
         { success: false, error: 'Title, description, and regionId are required' },
@@ -140,7 +132,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if region exists
     const region = await prisma.region.findUnique({
       where: { id: parseInt(regionId) }
     });
@@ -152,7 +143,6 @@ export async function POST(request) {
       );
     }
 
-    // If userId provided, check if user exists
     if (userId) {
       const user = await prisma.user.findUnique({
         where: { id: parseInt(userId) }
@@ -175,7 +165,7 @@ export async function POST(request) {
         name: name || null,
         sourceIP: sourceIP || null,
         imgUrl: imgUrl || '',
-        status: 0 // pending by default
+        status: 0 
       },
       include: {
         region: {

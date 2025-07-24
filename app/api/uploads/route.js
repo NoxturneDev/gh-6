@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { upload, processImage, getFileUrl } from '@/app/lib/multer';
 import { promisify } from 'util';
 
-// Convert multer middleware to work with Next.js
 const runMiddleware = (req, res, fn) => {
   return new Promise((resolve, reject) => {
     fn(req, res, (result) => {
@@ -17,7 +16,7 @@ const runMiddleware = (req, res, fn) => {
 export async function POST(request) {
   try {
     const formData = await request.formData();
-    const files = formData.getAll('images'); // 'images' is the field name
+    const files = formData.getAll('images'); 
     
     if (!files || files.length === 0) {
       return NextResponse.json(
