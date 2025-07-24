@@ -20,13 +20,15 @@ model User {
 }
 
 model Region {
-  id          Int        @id @default(autoincrement())
+  id          Int                   @id @default(autoincrement())
   name        String
   description String?
   reports     Report[]
   donations   Donation[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  classification RegionClassification[]
+  detail      RegionDetail?            
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 }
 
 model Report {
@@ -42,6 +44,7 @@ model Report {
   user         User?     @relation(fields: [userId], references: [id])
   sourceIP     String?   // Optional for abuse detection
   name         String?
+  imgUrl       String    @default("")
 }
 
 model Donation {
@@ -55,3 +58,25 @@ model Donation {
   paymentStatus Int      @default(0) // 0: pending, 1: success, 2: failed
 }
 
+model RegionClassification {
+  id       Int    @id @default(autoincrement())
+  regionId Int
+  region   Region @relation(fields: [regionId], references: [id])
+  type     String // e.g., "akses_transportasi", "infrastruktur", etc.
+}
+
+model RegionDetail {
+  id              Int       @id @default(autoincrement())
+  regionId        Int       @unique
+  region          Region    @relation(fields: [regionId], references: [id])
+  educationStatus Int       @default(0) // 0: harus ditindak, 1: terbelakang, 2: baik
+  sekolahNegeri   Int
+  sekolahSwasta   Int
+  sdInSchool      Int
+  sdOutSchool     Int
+  smpInSchool     Int
+  smpOutSchool    Int
+  smaInSchool     Int
+  smaOutSchool    Int
+  teacherCount    Int
+}
