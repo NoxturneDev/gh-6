@@ -9,10 +9,10 @@ import { Search } from "lucide-react";
 const MAP_SOURCES = {
   default: "/default_map.jpg",
   sumatra: "/sumatra_active.jpg",
-  java: "/default_map.jpg",
-  kalimantan: "/default_map.jpg",
-  sulawesi: "/default_map.jpg",
-  papua: "/default_map.jpg",
+  java: "/jawa_active.jpg",
+  kalimantan: "/kalimantan_active.jpg",
+  sulawesi: "/sulawesi_active.jpg",
+  papua: "/papua_active.jpg",
 };
 
 // --- UI COMPONENTS ---
@@ -31,7 +31,7 @@ const Tooltip = ({ content, position }) => {
 };
 
 const RegionDetailsCard = ({ data, onClose }) => {
-  const { name, description, reports, details } = data || {};
+  const { name, description, reports, detail } = data || {};
 
   const cardVariants = {
     hidden: { y: "100%", opacity: 0 },
@@ -57,7 +57,7 @@ const RegionDetailsCard = ({ data, onClose }) => {
     <AnimatePresence>
       {data && (
         <motion.div
-          className="fixed inset-0 bg-opacity-60 flex items-end z-50"
+          className="fixed inset-0  bg-opacity-60 flex items-end z-50"
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -115,39 +115,39 @@ const RegionDetailsCard = ({ data, onClose }) => {
                       <tbody>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Total Public Schools (Sekolah Negeri)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.sekolahNegeri?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sekolahNegeri?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Total Private Schools (Sekolah Swasta)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.sekolahSwasta?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sekolahSwasta?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Total Teachers</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.teacherCount?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.teacherCount?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Elementary Students (In School)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.sdInSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sdInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Elementary Students (Out of School)</td>
-                          <td className="p-3 text-red-600 font-semibold text-right">{details?.sdOutSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-red-600 font-semibold text-right">{detail?.sdOutSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Junior High Students (In School)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.smpInSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.smpInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Junior High Students (Out of School)</td>
-                          <td className="p-3 text-red-600 font-semibold text-right">{details?.smpOutSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-red-600 font-semibold text-right">{detail?.smpOutSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Senior High Students (In School)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.smaInSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.smaInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Senior High Students (Out of School)</td>
-                          <td className="p-3 text-red-600 font-semibold text-right">{details?.smaOutSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-red-600 font-semibold text-right">{detail?.smaOutSchool?.toLocaleString()}</td>
                         </tr>
                       </tbody>
                     </table>
