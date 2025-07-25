@@ -7,10 +7,10 @@ import axios from 'axios';
 const MAP_SOURCES = {
   default: "/default_map.jpg",
   sumatra: "/sumatra_active.jpg",
-  java: "/default_map.jpg",
-  kalimantan: "/default_map.jpg",
-  sulawesi: "/default_map.jpg",
-  papua: "/default_map.jpg",
+  java: "/jawa_active.jpg",
+  kalimantan: "/kalimantan_active.jpg",
+  sulawesi: "/sulawesi_active.jpg",
+  papua: "/papua_active.jpg",
 };
 
 
@@ -28,7 +28,7 @@ const Tooltip = ({ content, position }) => {
 };
 
 const RegionDetailsCard = ({ data, onClose }) => {
-  const { name, description, reports, details } = data || {};
+  const { name, description, reports, detail } = data || {};
 
   const cardVariants = {
     hidden: { y: "100%", opacity: 0 },
@@ -50,7 +50,7 @@ const RegionDetailsCard = ({ data, onClose }) => {
     <AnimatePresence>
       {data && (
         <motion.div
-          className="fixed inset-0 bg-opacity-60 flex items-end z-50"
+          className="fixed inset-0  bg-opacity-60 flex items-end z-50"
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -80,7 +80,7 @@ const RegionDetailsCard = ({ data, onClose }) => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Executive Summary</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    The {name} region reports a total of <span className="font-bold">{details?.sekolahNegeri + details?.sekolahSwasta}</span> educational institutions, supported by <span className="font-bold">{details?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{details?.sdInSchool?.toLocaleString()}</span> elementary, <span className="font-bold">{details?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{details?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However, there is a notable number of out-of-school children across all levels, indicating potential challenges in access and retention.
+                    The {name} region reports a total of <span className="font-bold">{detail?.sekolahNegeri + detail?.sekolahSwasta}</span> educational institutions, supported by <span className="font-bold">{detail?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{detail?.sdInSchool?.toLocaleString()}</span> elementary, <span className="font-bold">{detail?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{detail?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However, there is a notable number of out-of-school children across all levels, indicating potential challenges in access and retention.
                   </p>
                 </div>
                 <div>
@@ -90,39 +90,39 @@ const RegionDetailsCard = ({ data, onClose }) => {
                       <tbody>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Total Public Schools (Sekolah Negeri)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.sekolahNegeri?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sekolahNegeri?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Total Private Schools (Sekolah Swasta)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.sekolahSwasta?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sekolahSwasta?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Total Teachers</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.teacherCount?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.teacherCount?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Elementary Students (In School)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.sdInSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sdInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Elementary Students (Out of School)</td>
-                          <td className="p-3 text-red-600 font-semibold text-right">{details?.sdOutSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-red-600 font-semibold text-right">{detail?.sdOutSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Junior High Students (In School)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.smpInSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.smpInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Junior High Students (Out of School)</td>
-                          <td className="p-3 text-red-600 font-semibold text-right">{details?.smpOutSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-red-600 font-semibold text-right">{detail?.smpOutSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-medium text-gray-600">Senior High Students (In School)</td>
-                          <td className="p-3 text-gray-800 font-semibold text-right">{details?.smaInSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-gray-800 font-semibold text-right">{detail?.smaInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="bg-gray-50">
                           <td className="p-3 font-medium text-gray-600">Senior High Students (Out of School)</td>
-                          <td className="p-3 text-red-600 font-semibold text-right">{details?.smaOutSchool?.toLocaleString()}</td>
+                          <td className="p-3 text-red-600 font-semibold text-right">{detail?.smaOutSchool?.toLocaleString()}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -294,10 +294,7 @@ export default function InteractiveMap() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 min-h-screen overflow-hidden">
-      <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4">Interactive Map of Indonesia</h1>
-      <p className="text-gray-600 mb-6 text-center">Hover over an island to see more information. Click to see details.</p>
-
+    <div className="bg-blue-500 flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 min-h-screen overflow-hidden">
       <div
         className="relative w-full max-w-4xl mx-auto cursor-pointer"
         onMouseMove={handleMouseMove}
@@ -305,7 +302,7 @@ export default function InteractiveMap() {
         onClick={handleClick}
       >
         {isLoading ? (
-          <div className="w-full aspect-[16/9] bg-gray-200 flex items-center justify-center rounded-lg animate-pulse">
+          <div className="w-full aspect-[16/9] bg-blue-500 flex items-center justify-center rounded-lg animate-pulse">
             <p className="text-gray-500">Loading Map Data...</p>
           </div>
         ) : (
