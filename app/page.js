@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import Link from "next/link";
+import { Search } from "lucide-react";
 
 const MAP_SOURCES = {
   default: "/default_map.jpg",
@@ -13,14 +15,15 @@ const MAP_SOURCES = {
   papua: "/papua_active.jpg",
 };
 
-
 // --- UI COMPONENTS ---
 
 const Tooltip = ({ content, position }) => {
   if (!content) return null;
   return (
-    <div style={{ position: 'absolute', left: `${position.x}px`, top: `${position.y}px`, transform: 'translate(15px, -100%)' }}
-      className="bg-gray-800 text-white text-sm rounded-lg shadow-lg p-3 z-50 pointer-events-none max-w-xs">
+    <div
+      style={{ position: "absolute", left: `${position.x}px`, top: `${position.y}px`, transform: "translate(15px, -100%)" }}
+      className="bg-gray-800 text-white text-sm rounded-lg shadow-lg p-3 z-50 pointer-events-none max-w-xs"
+    >
       <h3 className="font-bold text-base mb-1">{content.name}</h3>
       {content.description ? <p>{content.description}</p> : <p className="text-gray-400">No details available.</p>}
     </div>
@@ -39,10 +42,14 @@ const RegionDetailsCard = ({ data, onClose }) => {
   const getStatusBadge = (status) => {
     const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
     switch (status) {
-      case "Completed": return <span className={`${baseClasses} bg-green-100 text-green-800`}>Completed</span>;
-      case "In Progress": return <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>In Progress</span>;
-      case "Pending": return <span className={`${baseClasses} bg-red-100 text-red-800`}>Pending</span>;
-      default: return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>Unknown</span>;
+      case "Completed":
+        return <span className={`${baseClasses} bg-green-100 text-green-800`}>Completed</span>;
+      case "In Progress":
+        return <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>In Progress</span>;
+      case "Pending":
+        return <span className={`${baseClasses} bg-red-100 text-red-800`}>Pending</span>;
+      default:
+        return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>Unknown</span>;
     }
   };
 
@@ -62,7 +69,7 @@ const RegionDetailsCard = ({ data, onClose }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 border-b border-gray-200">
               <div className="flex justify-between items-start">
@@ -70,8 +77,23 @@ const RegionDetailsCard = ({ data, onClose }) => {
                   <h2 className="text-2xl font-bold text-gray-800">{name}</h2>
                   <p className="text-sm text-gray-500">{description}</p>
                 </div>
-                <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -80,7 +102,10 @@ const RegionDetailsCard = ({ data, onClose }) => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Executive Summary</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    The {name} region reports a total of <span className="font-bold">{detail?.sekolahNegeri + detail?.sekolahSwasta}</span> educational institutions, supported by <span className="font-bold">{detail?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{detail?.sdInSchool?.toLocaleString()}</span> elementary, <span className="font-bold">{detail?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{detail?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However, there is a notable number of out-of-school children across all levels, indicating potential challenges in access and retention.
+                    The {name} region reports a total of <span className="font-bold">{details?.sekolahNegeri + details?.sekolahSwasta}</span> educational institutions, supported by{" "}
+                    <span className="font-bold">{details?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{details?.sdInSchool?.toLocaleString()}</span> elementary,{" "}
+                    <span className="font-bold">{details?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{details?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However,
+                    there is a notable number of out-of-school children across all levels, indicating potential challenges in access and retention.
                   </p>
                 </div>
                 <div>
@@ -137,7 +162,6 @@ const RegionDetailsCard = ({ data, onClose }) => {
   );
 };
 
-
 export default function InteractiveMap() {
   const regions = {
     sumatra: {
@@ -164,7 +188,7 @@ export default function InteractiveMap() {
       id: 5,
       name: "Papua",
       rect: { x: 70, y: 25, width: 30, height: 55 },
-    }
+    },
   };
 
   const [currentMap, setCurrentMap] = useState(MAP_SOURCES.default);
@@ -175,7 +199,6 @@ export default function InteractiveMap() {
   // New state to hold the fetched details
   const [regionDetails, setRegionDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
 
   // 3. Real API fetch function using axios
   const fetchRegionStats = async (id) => {
@@ -227,7 +250,6 @@ export default function InteractiveMap() {
     fetchAllData();
   }, []); // Empty dependency array means this runs once on mount
 
-
   useEffect(() => {
     return () => clearTimeout(debounceTimer.current);
   }, []);
@@ -247,10 +269,7 @@ export default function InteractiveMap() {
 
       for (const key in regions) {
         const region = regions[key];
-        if (
-          percentX >= region.rect.x && percentX <= region.rect.x + region.rect.width &&
-          percentY >= region.rect.y && percentY <= region.rect.y + region.rect.height
-        ) {
+        if (percentX >= region.rect.x && percentX <= region.rect.x + region.rect.width && percentY >= region.rect.y && percentY <= region.rect.y + region.rect.height) {
           activeRegionKey = key;
           break;
         }
@@ -267,7 +286,6 @@ export default function InteractiveMap() {
     }
   }, [hoveredRegionKey]);
 
-
   const handleMouseLeave = () => {
     clearTimeout(debounceTimer.current);
     setHoveredRegionKey(null);
@@ -278,7 +296,7 @@ export default function InteractiveMap() {
 
     const details = await fetchRegionStats(1);
 
-    console.log('details', details);
+    console.log("details", details);
     setSelectedRegionData(details);
   };
 
@@ -289,12 +307,28 @@ export default function InteractiveMap() {
     // Combine base info with fetched description for the tooltip
     return {
       name: baseInfo.name,
-      description: details ? details.description : "Details not available."
+      description: details ? details.description : "Details not available.",
     };
   };
 
   return (
-    <div className="bg-blue-500 flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 min-h-screen overflow-hidden">
+    <div className="flex flex-col items-center justify-center p-4 md:p-8 min-h-screen overflow-hidden">
+      {!isLoading && (
+        <div className="border border-blue-700 w-1/2 mx-auto flex items-center rounded-full">
+          <div className="px-8 py-2 flex gap-x-4 w-full">
+            <Search className="text-blue-700 cursor-pointer" />
+            <input
+              className="rounded-full w-full focus:outline-none focus:border-none placeholder:text-blue-700"
+              placeholder="Provinsi Kota"
+            />
+          </div>
+          <div className="w-1/2 flex text-blue-700 justify-center gap-x-8">
+            <Link href="/">Home</Link>
+            <Link href="/explore">Explore</Link>
+          </div>
+        </div>
+      )}
+
       <div
         className="relative w-full max-w-4xl mx-auto cursor-pointer"
         onMouseMove={handleMouseMove}
@@ -302,16 +336,26 @@ export default function InteractiveMap() {
         onClick={handleClick}
       >
         {isLoading ? (
-          <div className="w-full aspect-[16/9] bg-blue-500 flex items-center justify-center rounded-lg animate-pulse">
+          <div className="w-full aspect-[16/9] flex items-center justify-center rounded-lg animate-pulse">
             <p className="text-gray-500">Loading Map Data...</p>
           </div>
         ) : (
-          <img src={currentMap} alt="Map of Indonesia" className="w-full h-auto" />
+          <img
+            src={currentMap}
+            alt="Map of Indonesia"
+            className="w-full h-auto"
+          />
         )}
-        <Tooltip content={getTooltipContent()} position={tooltipPosition} />
+        <Tooltip
+          content={getTooltipContent()}
+          position={tooltipPosition}
+        />
       </div>
 
-      <RegionDetailsCard data={selectedRegionData} onClose={() => setSelectedRegionData(null)} />
+      <RegionDetailsCard
+        data={selectedRegionData}
+        onClose={() => setSelectedRegionData(null)}
+      />
     </div>
   );
 }
