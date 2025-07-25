@@ -107,9 +107,6 @@ export default function ExplorePage() {
       submitData.append('description', reportFormData.description);
       submitData.append('regionId', reportFormData.regionId);
       submitData.append('name', reportFormData.name);
-      
-      submitData.append('sourceIP', '127.0.0.1'); 
-      
       if (reportFormData.image) {
         submitData.append('image', reportFormData.image);
       }
@@ -128,11 +125,11 @@ export default function ExplorePage() {
           name: "",
           image: null
         });
-        
+
         setShowModal(false);
-        
+
         handleFetchReports();
-        
+
         alert('Pengaduan berhasil dibuat!');
       }
     } catch (error) {
@@ -154,7 +151,7 @@ export default function ExplorePage() {
       submitData.append('regionId', donationFormData.regionId);
       submitData.append('targetAmount', donationFormData.targetAmount);
       submitData.append('deadline', donationFormData.deadline);
-      
+
       if (donationFormData.image) {
         submitData.append('image', donationFormData.image);
       }
@@ -175,11 +172,11 @@ export default function ExplorePage() {
           deadline: "",
           image: null
         });
-        
+
         setShowModal(false);
-        
+
         handleFetchDonations();
-        
+
         alert('Kampanye donasi berhasil dibuat!');
       }
     } catch (error) {
@@ -227,14 +224,14 @@ export default function ExplorePage() {
               Donasi
             </button>
           </div>
-          <button 
+          <button
             onClick={handleCreateButton}
             className="bg-blue-700 text-white px-7 cursor-pointer py-1 rounded-full"
           >
             + {activePage === "pengaduan" ? "Buat Pengaduan" : "Buat Donasi"}
           </button>
         </div>
-        
+
         {activePage === "pengaduan" ? (
           <div className="mt-10 flex flex-wrap gap-7">
             {reports.map((report) => (
@@ -281,7 +278,7 @@ export default function ExplorePage() {
                 <X size={24} />
               </button>
             </div>
-            
+
             {activePage === "pengaduan" ? (
               <form onSubmit={handleSubmitReport} className="space-y-4">
                 <div>

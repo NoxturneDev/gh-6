@@ -7,7 +7,9 @@ const prisma = new PrismaClient();
  * Returns detail information about a specific region
  */
 export async function GET(req, { params }) {
-  const regionId = parseInt(params.id);
+  const id = await params.id;
+  const regionId = parseInt(id);
+  console.log(regionId);
 
   if (isNaN(regionId)) {
     return Response.json({ error: 'Invalid region ID' }, { status: 400 });

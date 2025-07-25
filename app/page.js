@@ -9,9 +9,10 @@ import { Search } from "lucide-react";
 const MAP_SOURCES = {
   default: "/default_map.jpg",
   sumatra: "/sumatra_active.jpg",
-  java: "/jawa_active.jpg",
+  jawa: "/jawa_active.jpg",
   kalimantan: "/kalimantan_active.jpg",
   sulawesi: "/sulawesi_active.jpg",
+  nusa: "/nusatenggara_active.jpg",
   papua: "/papua_active.jpg",
 };
 
@@ -102,9 +103,9 @@ const RegionDetailsCard = ({ data, onClose }) => {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Executive Summary</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    The {name} region reports a total of <span className="font-bold">{details?.sekolahNegeri + details?.sekolahSwasta}</span> educational institutions, supported by{" "}
-                    <span className="font-bold">{details?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{details?.sdInSchool?.toLocaleString()}</span> elementary,{" "}
-                    <span className="font-bold">{details?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{details?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However,
+                    The {name} region reports a total of <span className="font-bold">{detail?.sekolahNegeri + detail?.sekolahSwasta}</span> educational institutions, supported by{" "}
+                    <span className="font-bold">{detail?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{detail?.sdInSchool?.toLocaleString()}</span> elementary,{" "}
+                    <span className="font-bold">{detail?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{detail?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However,
                     there is a notable number of out-of-school children across all levels, indicating potential challenges in access and retention.
                   </p>
                 </div>
@@ -167,27 +168,32 @@ export default function InteractiveMap() {
     sumatra: {
       id: 2,
       name: "Sumatra",
-      rect: { x: 0, y: 5, width: 30, height: 75 },
+      rect: { x: 0, y: 19, width: 30, height: 40 },
     },
     jawa: {
       id: 1,
       name: "Jawa",
-      rect: { x: 25, y: 75, width: 25, height: 15 },
+      rect: { x: 24, y: 60, width: 42, height: 15 },
     },
     kalimantan: {
       id: 3,
       name: "Kalimantan",
-      rect: { x: 28, y: 10, width: 28, height: 60 },
+      rect: { x: 30, y: 25, width: 22, height: 30 },
     },
     sulawesi: {
       id: 4,
       name: "Sulawesi",
-      rect: { x: 50, y: 30, width: 20, height: 50 },
+      rect: { x: 52, y: 30, width: 12, height: 30 },
+    },
+    nusa: {
+      id: 5,
+      name: "Nusa Tenggara",
+      rect: { x: 65, y: 34, width: 15, height: 20 },
     },
     papua: {
-      id: 5,
+      id: 6,
       name: "Papua",
-      rect: { x: 70, y: 25, width: 30, height: 55 },
+      rect: { x: 80, y: 15, width: 25, height: 55 },
     },
   };
 
@@ -199,6 +205,7 @@ export default function InteractiveMap() {
   // New state to hold the fetched details
   const [regionDetails, setRegionDetails] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isDebugMode, setIsDebugMode] = useState(false);
 
   // 3. Real API fetch function using axios
   const fetchRegionStats = async (id) => {
@@ -266,6 +273,7 @@ export default function InteractiveMap() {
       const percentX = (x / rect.width) * 100;
       const percentY = (y / rect.height) * 100;
       let activeRegionKey = null;
+      console.log(percentX, percentY, rect.width, rect.height);
 
       for (const key in regions) {
         const region = regions[key];
@@ -346,6 +354,35 @@ export default function InteractiveMap() {
             className="w-full h-auto"
           />
         )}
+
+        {/* --- NEW: Visual debug boxes --- */}
+        {isDebugMode && (
+          Object.entries(regions).map(([key, region]) => (
+            <div
+              key={`${key}-debug`}
+              style={{
+                position: 'absolute',
+                left: `${region.rect.x}%`,
+                top: `${region.rect.y}%`,
+                width: `${region.rect.width}%`,
+                height: `${region.rect.height}%`,
+                backgroundColor: 'rgba(239, 68, 68, 0.4)', // Semi-transparent red
+                border: '2px solid rgba(185, 28, 28, 1)', // Solid red border
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                textShadow: '1px 1px 2px black',
+                pointerEvents: 'none' // IMPORTANT: so it doesn't interfere with mouse events
+              }}
+            >
+              {region.name}
+            </div>
+          ))
+        )}
+
         <Tooltip
           content={getTooltipContent()}
           position={tooltipPosition}
