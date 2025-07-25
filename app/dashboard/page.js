@@ -11,12 +11,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import { MapPin, FileText, DollarSign, TrendingUp, Eye, CheckCircle, XCircle, Clock } from "lucide-react"
 
+// --- Dummy Data ---
+const dummyRegions = [
+  { id: 1, name: 'Jawa', description: 'Pulau utama dengan populasi terbesar.' },
+  { id: 2, name: 'Sumatra', description: 'Pulau di ujung barat Indonesia.' },
+  { id: 3, name: 'Kalimantan', description: 'Pulau dengan banyak hutan tropis.' },
+  { id: 4, name: 'Sulawesi', description: 'Dikenal dengan bentuknya yang unik.' },
+  { id: 5, name: 'Papua', description: 'Wilayah paling timur Indonesia.' },
+];
+
+const dummyReports = [
+  { id: 1, regionId: 1, title: 'Kerusakan Atap Sekolah', description: 'Atap di SDN 1 Jakarta bocor parah.', status: 0, submittedAt: new Date('2025-07-20T09:00:00Z'), sourceIP: '192.168.1.1' },
+  { id: 2, regionId: 3, title: 'Kekurangan Buku Pelajaran', description: 'Siswa di SMP 2 Pontianak kekurangan buku Matematika.', status: 1, submittedAt: new Date('2025-07-18T11:30:00Z'), sourceIP: '10.0.0.5' },
+  { id: 3, regionId: 5, title: 'Akses Internet Lambat', description: 'Koneksi internet di SMA 1 Jayapura sangat lambat.', status: 2, submittedAt: new Date('2025-07-15T14:00:00Z'), sourceIP: '172.16.0.10' },
+  { id: 4, regionId: 1, title: 'Perbaikan Lapangan Olahraga', description: 'Lapangan basket perlu perbaikan segera.', status: 0, submittedAt: new Date('2025-07-21T08:00:00Z'), sourceIP: '192.168.1.2' },
+  { id: 5, regionId: 2, title: 'Butuh Proyektor Baru', description: 'Proyektor di ruang kelas 3 sudah tidak berfungsi.', status: 1, submittedAt: new Date('2025-07-19T16:00:00Z'), sourceIP: '10.0.1.8' },
+];
+
+const dummyDonations = [
+  { id: 1, regionId: 1, donorName: 'Budi Hartono', amount: 500, message: 'Semoga bermanfaat untuk pendidikan di Jawa.', paymentStatus: 1, createdAt: new Date('2025-07-21T10:00:00Z') },
+  { id: 2, regionId: 3, donorName: 'Siti Aminah', amount: 250, message: 'Untuk anak-anak di Kalimantan.', paymentStatus: 1, createdAt: new Date('2025-07-20T12:45:00Z') },
+  { id: 3, regionId: 5, donorName: 'Anonymous', amount: 1000, message: 'Maju terus pendidikan Papua!', paymentStatus: 0, createdAt: new Date('2025-07-22T09:30:00Z') },
+  { id: 4, regionId: 1, donorName: 'John Doe', amount: 150, message: '', paymentStatus: 2, createdAt: new Date('2025-07-19T15:00:00Z') },
+];
+
+
 // Zustand store for state management
 const useDashboardStore = create((set, get) => ({
   regions: [],
   reports: [],
   donations: [],
-  loading: false,
+  loading: true,
   selectedItem: null,
   selectedType: null,
 
@@ -27,72 +52,55 @@ const useDashboardStore = create((set, get) => ({
   setSelectedItem: (item, type) => set({ selectedItem: item, selectedType: type }),
 
   fetchData: async () => {
-    set({ loading: true })
-    try {
-      const [regionsRes, reportsRes, donationsRes] = await Promise.all([
-        fetch("http://localhost:3000/api/region"),
-        fetch("http://localhost:3000/api/report"),
-        fetch("http://localhost:3000/api/donation"),
-      ])
-
-      const regions = await regionsRes.json()
-      const reports = await reportsRes.json()
-      const donations = await donationsRes.json()
-
-      set({ regions, reports, donations })
-    } catch (error) {
-      console.error("Error fetching data:", error)
-    } finally {
-      set({ loading: false })
-    }
+    set({ loading: true });
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    set({
+      regions: dummyRegions,
+      reports: dummyReports,
+      donations: dummyDonations,
+      loading: false
+    });
   },
 
   updateReportStatus: async (reportId, status) => {
-    try {
-      await fetch(`http://localhost:3000/api/reports/${reportId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      })
-
-      const { reports } = get()
-      const updatedReports = reports.map((report) => (report.id === reportId ? { ...report, status } : report))
-      set({ reports: updatedReports })
-    } catch (error) {
-      console.error("Error updating report status:", error)
-    }
+    set({ loading: true });
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const { reports } = get();
+    const updatedReports = reports.map((report) => (report.id === reportId ? { ...report, status } : report));
+    set({ reports: updatedReports, loading: false, selectedItem: null });
   },
-}))
+}));
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 const getStatusBadge = (status) => {
   const statusMap = {
     0: { label: "Pending", variant: "secondary", icon: Clock },
     1: { label: "Approved", variant: "default", icon: CheckCircle },
     2: { label: "Rejected", variant: "destructive", icon: XCircle },
-  }
+  };
 
-  const { label, variant, icon: Icon } = statusMap[status] || statusMap[0]
+  const { label, variant, icon: Icon } = statusMap[status] || statusMap[0];
 
   return (
     <Badge variant={variant} className="flex items-center gap-1">
       <Icon className="w-3 h-3" />
       {label}
     </Badge>
-  )
-}
+  );
+};
 
 const getPaymentStatusBadge = (status) => {
   const statusMap = {
     0: { label: "Pending", variant: "secondary" },
     1: { label: "Success", variant: "default" },
     2: { label: "Failed", variant: "destructive" },
-  }
+  };
 
-  const { label, variant } = statusMap[status] || statusMap[0]
-  return <Badge variant={variant}>{label}</Badge>
-}
+  const { label, variant } = statusMap[status] || statusMap[0];
+  return <Badge variant={variant}>{label}</Badge>;
+};
 
 export default function DashboardPage() {
   const {
@@ -105,62 +113,49 @@ export default function DashboardPage() {
     fetchData,
     setSelectedItem,
     updateReportStatus,
-  } = useDashboardStore()
+  } = useDashboardStore();
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchData();
+  }, [fetchData]);
 
   // Calculate statistics
-  const totalRegions = regions.length
-  const totalReports = reports.length
-  const totalDonations = donations.reduce((sum, donation) => sum + donation.amount, 0)
-  const pendingReports = reports.filter((report) => report.status === 0).length
+  const totalRegions = regions.length;
+  const totalReports = reports.length;
+  const totalDonations = donations.reduce((sum, donation) => donation.paymentStatus === 1 ? sum + donation.amount : sum, 0);
+  const pendingReports = reports.filter((report) => report.status === 0).length;
 
   // Prepare chart data
   const regionReportsData = regions.map((region) => ({
     name: region.name,
     reports: reports.filter((report) => report.regionId === region.id).length,
     donations: donations.filter((donation) => donation.regionId === region.id).length,
-  }))
+  }));
 
   const reportStatusData = [
     { name: "Pending", value: reports.filter((r) => r.status === 0).length },
     { name: "Approved", value: reports.filter((r) => r.status === 1).length },
     { name: "Rejected", value: reports.filter((r) => r.status === 2).length },
-  ]
+  ].filter(item => item.value > 0);
 
-  const donationTrendData = donations
-    .reduce((acc, donation) => {
-      const date = new Date(donation.createdAt).toLocaleDateString()
-      const existing = acc.find((item) => item.date === date)
-      if (existing) {
-        existing.amount += donation.amount
-        existing.count += 1
-      } else {
-        acc.push({ date, amount: donation.amount, count: 1 })
-      }
-      return acc
-    }, [])
-    .slice(-7) // Last 7 days
 
-  if (loading) {
+  if (loading && !selectedItem) { // Show full page loader only on initial load
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6 bg-background text-foreground">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Overview of regions, reports, and donations</p>
         </div>
         <Button onClick={fetchData} disabled={loading}>
-          Refresh Data
+          {loading ? "Refreshing..." : "Refresh Data"}
         </Button>
       </div>
 
@@ -193,8 +188,8 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalDonations.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">{donations.length} donations</p>
+            <div className="text-2xl font-bold">Rp{totalDonations}.000.000</div>
+            <p className="text-xs text-muted-foreground">{donations.length} donations received</p>
           </CardContent>
         </Card>
 
@@ -287,7 +282,7 @@ export default function DashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {reports.slice(0, 10).map((report) => {
-                    const region = regions.find((r) => r.id === report.regionId)
+                    const region = regions.find((r) => r.id === report.regionId);
                     return (
                       <TableRow
                         key={report.id}
@@ -303,15 +298,15 @@ export default function DashboardPage() {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedItem(report, "report")
+                              e.stopPropagation();
+                              setSelectedItem(report, "report");
                             }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
-                    )
+                    );
                   })}
                 </TableBody>
               </Table>
@@ -339,7 +334,7 @@ export default function DashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {donations.slice(0, 10).map((donation) => {
-                    const region = regions.find((r) => r.id === donation.regionId)
+                    const region = regions.find((r) => r.id === donation.regionId);
                     return (
                       <TableRow
                         key={donation.id}
@@ -347,7 +342,7 @@ export default function DashboardPage() {
                         onClick={() => setSelectedItem(donation, "donation")}
                       >
                         <TableCell>{donation.donorName || "Anonymous"}</TableCell>
-                        <TableCell className="font-medium">${donation.amount.toFixed(2)}</TableCell>
+                        <TableCell className="font-medium">Rp{donation.amount}.000</TableCell>
                         <TableCell>{region?.name || "Unknown"}</TableCell>
                         <TableCell>{getPaymentStatusBadge(donation.paymentStatus)}</TableCell>
                         <TableCell>{new Date(donation.createdAt).toLocaleDateString()}</TableCell>
@@ -356,15 +351,15 @@ export default function DashboardPage() {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedItem(donation, "donation")
+                              e.stopPropagation();
+                              setSelectedItem(donation, "donation");
                             }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
-                    )
+                    );
                   })}
                 </TableBody>
               </Table>
@@ -391,8 +386,8 @@ export default function DashboardPage() {
                 </TableHeader>
                 <TableBody>
                   {regions.map((region) => {
-                    const regionReports = reports.filter((r) => r.regionId === region.id)
-                    const regionDonations = donations.filter((d) => d.regionId === region.id)
+                    const regionReports = reports.filter((r) => r.regionId === region.id);
+                    const regionDonations = donations.filter((d) => d.regionId === region.id);
                     return (
                       <TableRow
                         key={region.id}
@@ -408,15 +403,15 @@ export default function DashboardPage() {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedItem(region, "region")
+                              e.stopPropagation();
+                              setSelectedItem(region, "region");
                             }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
-                    )
+                    );
                   })}
                 </TableBody>
               </Table>
@@ -549,7 +544,7 @@ export default function DashboardPage() {
                   <div className="text-2xl font-bold">
                     $
                     {donations
-                      .filter((d) => d.regionId === selectedItem.id)
+                      .filter((d) => d.regionId === selectedItem.id && d.paymentStatus === 1)
                       .reduce((sum, d) => sum + d.amount, 0)
                       .toFixed(2)}
                   </div>
@@ -561,5 +556,5 @@ export default function DashboardPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

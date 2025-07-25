@@ -26,7 +26,7 @@ const Tooltip = ({ content, position }) => {
       className="bg-gray-800 text-white text-sm rounded-lg shadow-lg p-3 z-50 pointer-events-none max-w-xs"
     >
       <h3 className="font-bold text-base mb-1">{content.name}</h3>
-      {content.description ? <p>{content.description}</p> : <p className="text-gray-400">No details available.</p>}
+      {content.description ? <p>{content.description}</p> : <p className="text-gray-400">5000 Schools, 10000 Students</p>}
     </div>
   );
 };
@@ -315,7 +315,7 @@ export default function InteractiveMap() {
     // Combine base info with fetched description for the tooltip
     return {
       name: baseInfo.name,
-      description: details ? details.description : "Details not available.",
+      description: details ? details.description : "5000 Schools , 10000 Students",
     };
   };
 
