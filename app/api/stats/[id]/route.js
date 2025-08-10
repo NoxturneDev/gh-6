@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
  * Returns detail information about a specific region
  */
 export async function GET(req, { params }) {
-  const id = await params.id;
+  const param = await params;
+  const id = param.id;
   const regionId = parseInt(id);
   console.log(regionId);
 

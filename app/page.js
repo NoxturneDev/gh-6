@@ -101,53 +101,53 @@ const RegionDetailsCard = ({ data, onClose }) => {
             <div className="p-6 overflow-y-auto">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Executive Summary</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Ringkasan Eksekutif</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    The {name} region reports a total of <span className="font-bold">{detail?.sekolahNegeri + detail?.sekolahSwasta}</span> educational institutions, supported by{" "}
-                    <span className="font-bold">{detail?.teacherCount?.toLocaleString()}</span> teachers. The student population is significant, with <span className="font-bold">{detail?.sdInSchool?.toLocaleString()}</span> elementary,{" "}
-                    <span className="font-bold">{detail?.smpInSchool?.toLocaleString()}</span> junior high, and <span className="font-bold">{detail?.smaInSchool?.toLocaleString()}</span> senior high students currently enrolled. However,
-                    there is a notable number of out-of-school children across all levels, indicating potential challenges in access and retention.
+                    Wilayah {name} melaporkan total <span className="font-bold">{detail?.sekolahNegeri + detail?.sekolahSwasta}</span> lembaga pendidikan, didukung oleh{" "}
+                    <span className="font-bold">{detail?.teacherCount?.toLocaleString()}</span> guru. Jumlah siswa cukup besar, dengan <span className="font-bold">{detail?.sdInSchool?.toLocaleString()}</span> siswa SD,{" "}
+                    <span className="font-bold">{detail?.smpInSchool?.toLocaleString()}</span> siswa SMP, dan <span className="font-bold">{detail?.smaInSchool?.toLocaleString()}</span> siswa SMA yang saat ini terdaftar.
+                    Namun, terdapat jumlah anak putus sekolah yang cukup besar di semua jenjang, yang menunjukkan adanya tantangan dalam akses dan retensi pendidikan.
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Detailed Statistics</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Statistik Terperinci</h3>
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
                       <tbody>
                         <tr className="border-b bg-gray-50">
-                          <td className="p-3 font-medium text-gray-600">Total Public Schools (Sekolah Negeri)</td>
+                          <td className="p-3 font-medium text-gray-600">Total Sekolah Negeri</td>
                           <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sekolahNegeri?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
-                          <td className="p-3 font-medium text-gray-600">Total Private Schools (Sekolah Swasta)</td>
+                          <td className="p-3 font-medium text-gray-600">Total Sekolah Swasta</td>
                           <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sekolahSwasta?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
-                          <td className="p-3 font-medium text-gray-600">Total Teachers</td>
+                          <td className="p-3 font-medium text-gray-600">Total Guru</td>
                           <td className="p-3 text-gray-800 font-semibold text-right">{detail?.teacherCount?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
-                          <td className="p-3 font-medium text-gray-600">Elementary Students (In School)</td>
+                          <td className="p-3 font-medium text-gray-600">Siswa SD (Dalam Sekolah)</td>
                           <td className="p-3 text-gray-800 font-semibold text-right">{detail?.sdInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
-                          <td className="p-3 font-medium text-gray-600">Elementary Students (Out of School)</td>
+                          <td className="p-3 font-medium text-gray-600">Siswa SD (Putus Sekolah)</td>
                           <td className="p-3 text-red-600 font-semibold text-right">{detail?.sdOutSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
-                          <td className="p-3 font-medium text-gray-600">Junior High Students (In School)</td>
+                          <td className="p-3 font-medium text-gray-600">Siswa SMP (Dalam Sekolah)</td>
                           <td className="p-3 text-gray-800 font-semibold text-right">{detail?.smpInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b bg-gray-50">
-                          <td className="p-3 font-medium text-gray-600">Junior High Students (Out of School)</td>
+                          <td className="p-3 font-medium text-gray-600">Siswa SMP (Putus Sekolah)</td>
                           <td className="p-3 text-red-600 font-semibold text-right">{detail?.smpOutSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="border-b">
-                          <td className="p-3 font-medium text-gray-600">Senior High Students (In School)</td>
+                          <td className="p-3 font-medium text-gray-600">Siswa SMA (Dalam Sekolah)</td>
                           <td className="p-3 text-gray-800 font-semibold text-right">{detail?.smaInSchool?.toLocaleString()}</td>
                         </tr>
                         <tr className="bg-gray-50">
-                          <td className="p-3 font-medium text-gray-600">Senior High Students (Out of School)</td>
+                          <td className="p-3 font-medium text-gray-600">Siswa SMA (Putus Sekolah)</td>
                           <td className="p-3 text-red-600 font-semibold text-right">{detail?.smaOutSchool?.toLocaleString()}</td>
                         </tr>
                       </tbody>
@@ -312,10 +312,12 @@ export default function InteractiveMap() {
     if (!hoveredRegionKey) return null;
     const baseInfo = regions[hoveredRegionKey];
     const details = regionDetails[hoveredRegionKey];
+    console.log(details);
     // Combine base info with fetched description for the tooltip
+    const stastInfo = `${details.detail?.sekolahNegeri + details.detail?.sekolahSwasta} Sekolah, ${details.detail?.sdInSchool + details.detail?.smpInSchool + details.detail?.smaInSchool} Siswa, ${details.detail?.teacherCount} Guru`;
     return {
       name: baseInfo.name,
-      description: details ? details.description : "5000 Schools , 10000 Students",
+      description: stastInfo,
     };
   };
 
